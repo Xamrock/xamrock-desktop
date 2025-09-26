@@ -50,4 +50,9 @@ jobs:
         URL="https://github.com/xamrock/xamrock-desktop/releases/download/${VERSION}/Xamrock-${VERSION}.zip"
 
         echo "Testing URL: $URL"
-        curl -I "$URL" || echo "⚠️ Release URL not yet available (expected for unreleased versions)"
+        if curl -I "$URL" 2>/dev/null; then
+          echo "✅ Release URL is accessible"
+        else
+          echo "⚠️ Release URL not yet available (expected for unreleased versions)"
+          echo "This is normal if the release workflow hasn't completed yet"
+        fi
