@@ -1,0 +1,62 @@
+name: Auto Tag on Version Change
+
+on:
+  push:
+    branches: [main, master]
+    paths: ['Xamrock.app/Contents/Info.plist']
+  workflow_dispatch:
+
+jobs:
+  check-and-tag:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Get app version
+      id: app_version
+      run: |
+        APP_VERSION=$(plutil -p Xamrock.app/Contents/Info.plist | grep CFBundleShortVersionString | cut -d'"' -f4)
+        echo "APP_VERSION=$APP_VERSION" >> $GITHUB_OUTPUT
+        echo "App version: $APP_VERSION"
+
+    - name: Get latest tag
+      id: latest_tag
+      run: |
+        LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "none")
+        echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
+        echo "Latest tag: $LATEST_TAG"
+
+    - name: Compare versions and create tag
+      run: |
+        APP_VERSION="${{ steps.app_version.outputs.APP_VERSION }}"
+        LATEST_TAG="${{ steps.latest_tag.outputs.LATEST_TAG }}"
+
+        echo "Comparing versions:"
+        echo "  App version: $APP_VERSION"
+        echo "  Latest tag: $LATEST_TAG"
+
+        if [ "$APP_VERSION" != "$LATEST_TAG" ]; then
+          echo "Version mismatch detected! Creating new tag: $APP_VERSION"
+
+          # Check if tag already exists
+          if git rev-parse "$APP_VERSION" >/dev/null 2>&1; then
+            echo "Tag $APP_VERSION already exists, skipping..."
+          else
+            # Create and push new tag
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git tag "$APP_VERSION"
+            git push origin "$APP_VERSION"
+            echo "✅ Created and pushed tag: $APP_VERSION"
+            echo "🚀 This will trigger the release workflow automatically!"
+          fi
+        else
+          echo "✅ Versions match, no tag needed"
+        fi
