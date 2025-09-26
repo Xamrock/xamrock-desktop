@@ -51,16 +51,29 @@ jobs:
           echo "✅ Versions match, no release needed"
         fi
 
-    - name: Create distribution archive
+    - name: Create distribution DMG
       if: steps.check_release.outputs.NEEDS_RELEASE == 'true'
       run: |
-        zip -r Xamrock-${{ steps.app_version.outputs.APP_VERSION }}.zip Xamrock.app
+        # Install create-dmg for better DMG creation
+        brew install create-dmg
+
+        # Create a proper DMG
+        create-dmg \
+          --volname "Xamrock ${{ steps.app_version.outputs.APP_VERSION }}" \
+          --window-pos 200 120 \
+          --window-size 600 300 \
+          --icon-size 100 \
+          --icon "Xamrock.app" 175 120 \
+          --hide-extension "Xamrock.app" \
+          --app-drop-link 425 120 \
+          "Xamrock-${{ steps.app_version.outputs.APP_VERSION }}.dmg" \
+          "Xamrock.app"
 
     - name: Calculate SHA256
       if: steps.check_release.outputs.NEEDS_RELEASE == 'true'
       id: sha256
       run: |
-        SHA256=$(shasum -a 256 Xamrock-${{ steps.app_version.outputs.APP_VERSION }}.zip | cut -d ' ' -f 1)
+        SHA256=$(shasum -a 256 Xamrock-${{ steps.app_version.outputs.APP_VERSION }}.dmg | cut -d ' ' -f 1)
         echo "SHA256=$SHA256" >> $GITHUB_OUTPUT
         echo "SHA256: $SHA256"
 
@@ -99,24 +112,33 @@ jobs:
           ```
 
           ### Manual Installation
-          1. Download the `Xamrock-${{ steps.app_version.outputs.APP_VERSION }}.zip` file below
-          2. Unzip the file
-          3. Move `Xamrock.app` to your `/Applications` folder
+          1. Download the `Xamrock-${{ steps.app_version.outputs.APP_VERSION }}.dmg` file below
+          2. Open the DMG file
+          3. Drag `Xamrock.app` to your `/Applications` folder
 
           ### SHA256 Checksum
           ```
           ${{ steps.sha256.outputs.SHA256 }}
           ```
-        files: Xamrock-${{ steps.app_version.outputs.APP_VERSION }}.zip
+        files: Xamrock-${{ steps.app_version.outputs.APP_VERSION }}.dmg
         draft: false
         prerelease: false
 
     - name: Update Homebrew cask formula
       if: steps.check_release.outputs.NEEDS_RELEASE == 'true'
       run: |
+        echo "Before update:"
+        cat Casks/xamrock.rb
+
         # Update the cask file with new version and SHA256
         sed -i '' "s/version \".*\"/version \"${{ steps.app_version.outputs.APP_VERSION }}\"/" Casks/xamrock.rb
         sed -i '' "s/sha256 \".*\"/sha256 \"${{ steps.sha256.outputs.SHA256 }}\"/" Casks/xamrock.rb
+
+        # Update URL to use .dmg instead of .zip
+        sed -i '' 's/Xamrock-#{version}\.zip/Xamrock-#{version}.dmg/' Casks/xamrock.rb
+
+        echo "After update:"
+        cat Casks/xamrock.rb
 
         echo "Updated cask formula:"
         echo "  Version: ${{ steps.app_version.outputs.APP_VERSION }}"
@@ -127,10 +149,21 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+
+        # Ensure we're on main branch
         git checkout main
-        git add Casks/xamrock.rb
-        git commit -m "Update Homebrew cask to ${{ steps.app_version.outputs.APP_VERSION }}" || exit 0
-        git push origin main
+
+        # Check if there are changes to commit
+        if git diff --quiet Casks/xamrock.rb; then
+          echo "No changes to cask formula, skipping commit"
+        else
+          echo "Changes detected, committing cask formula update"
+          git add Casks/xamrock.rb
+          git status
+          git commit -m "Update Homebrew cask to ${{ steps.app_version.outputs.APP_VERSION }}"
+          git push origin main
+          echo "✅ Committed and pushed cask formula update"
+        fi
 
         echo "🎉 Release complete! Users can now run:"
         echo "  brew update && brew upgrade --cask xamrock"
