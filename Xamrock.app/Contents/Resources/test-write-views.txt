@@ -1,4 +1,0 @@
-1 | This is a test file in the Views subdirectory.
-2 | Testing write permissions to another different directory.
-3 | Created at: $(date)
-4 | Test location: Views/

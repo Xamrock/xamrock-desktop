@@ -6,19 +6,7 @@
 	<dict>
 		<key>Resources/Assets.car</key>
 		<data>
-		/y83tY4rKHuMYEPRPleBif9fago=
-		</data>
-		<key>Resources/project.json</key>
-		<data>
-		riAD2OBAXQ8ZeDkf3+28T9sAhdk=
-		</data>
-		<key>Resources/test-write-subdir.txt</key>
-		<data>
-		dLwTkQK8oBYRPWmGTqO/QdOO1L8=
-		</data>
-		<key>Resources/test-write-views.txt</key>
-		<data>
-		9t8BFgSTUlu0ucfaSYaMARI8IoI=
+		Kw7llJQpfG7qzOf2pmzJuXzr8gU=
 		</data>
 		<key>Resources/xamrock-chip.icns</key>
 		<data>
@@ -35,28 +23,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			j5w1Osv7aPSBGdZgveXCa4n0FhaKcZwKzlJj68+RClo=
-			</data>
-		</dict>
-		<key>Resources/project.json</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			blnfCDcdfD5t65l3ejwwtZGnq5jBThmWNzArp9XoChY=
-			</data>
-		</dict>
-		<key>Resources/test-write-subdir.txt</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			Ty4H3cAGCUIylEB3+RmF8IuHXT51EHnJY69yWadpkEM=
-			</data>
-		</dict>
-		<key>Resources/test-write-views.txt</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			iNo/PzwENNVcZIUgyfHrdhiVujmc2xFw5ReukChnMJQ=
+			G2F3kdNlZ3Fdx83gbDXwus96HxUxOYcvmN0pHfAgPnc=
 			</data>
 		</dict>
 		<key>Resources/xamrock-chip.icns</key>

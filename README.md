@@ -7,7 +7,7 @@ Context Engineering IDE - AI-powered development environment for macOS.
 ### Homebrew (Recommended)
 
 ```bash
-brew tap xamrock/xamrock-desktop
+brew tap xamrock/xamrock-desktop https://github.com/xamrock/xamrock-desktop
 brew install --cask xamrock
 ```
 
