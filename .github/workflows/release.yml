@@ -14,6 +14,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Get version from tag
       id: get_version
@@ -68,6 +71,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+        git checkout main
         git add Casks/xamrock.rb
         git commit -m "Update Homebrew cask to ${{ steps.get_version.outputs.VERSION }}" || exit 0
-        git push
+        git push origin main
