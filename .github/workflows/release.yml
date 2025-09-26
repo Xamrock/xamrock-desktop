@@ -29,13 +29,9 @@ jobs:
         echo "SHA256: $SHA256"
 
     - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Xamrock ${{ steps.get_version.outputs.VERSION }}
+        name: Xamrock ${{ steps.get_version.outputs.VERSION }}
         body: |
           ## Xamrock ${{ steps.get_version.outputs.VERSION }}
 
@@ -54,18 +50,9 @@ jobs:
           ```
           ${{ steps.sha256.outputs.SHA256 }}
           ```
+        files: Xamrock-${{ steps.get_version.outputs.VERSION }}.zip
         draft: false
         prerelease: false
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./Xamrock-${{ steps.get_version.outputs.VERSION }}.zip
-        asset_name: Xamrock-${{ steps.get_version.outputs.VERSION }}.zip
-        asset_content_type: application/zip
 
     - name: Update Homebrew cask formula
       if: success()
