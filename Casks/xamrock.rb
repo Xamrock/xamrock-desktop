@@ -1,6 +1,6 @@
 cask "xamrock" do
-  version "0.1.13"
-  sha256 "807c7678ae725f17d2814f11affb1c85ed07db0bb1570c18bd369f89c25b2fe5"
+  version "0.1.14"
+  sha256 "0d522a0b79f78c8c309ef0f1151151dea8f3ff035a747feeddd8eaff7a669ece"
 
   url "https://github.com/xamrock/xamrock-desktop/releases/download/#{version}/Xamrock-#{version}.zip"
   name "Xamrock"
