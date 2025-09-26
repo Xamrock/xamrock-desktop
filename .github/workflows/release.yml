@@ -3,7 +3,8 @@ name: Create Release
 on:
   push:
     tags:
-      - '*.*.*'
+      - 'release-*'
+  workflow_dispatch:
 
 jobs:
   release:
@@ -18,9 +19,12 @@ jobs:
         fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Get version from tag
+    - name: Get version from app bundle
       id: get_version
-      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      run: |
+        VERSION=$(plutil -p Xamrock.app/Contents/Info.plist | grep CFBundleShortVersionString | cut -d'"' -f4)
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "App version: $VERSION"
 
     - name: Create distribution archive
       run: |
@@ -65,6 +69,10 @@ jobs:
         # Update the cask file with new version and SHA256
         sed -i '' "s/version \".*\"/version \"${{ steps.get_version.outputs.VERSION }}\"/" Casks/xamrock.rb
         sed -i '' "s/sha256 \".*\"/sha256 \"${{ steps.sha256.outputs.SHA256 }}\"/" Casks/xamrock.rb
+
+        echo "Updated cask formula:"
+        echo "  Version: ${{ steps.get_version.outputs.VERSION }}"
+        echo "  SHA256: ${{ steps.sha256.outputs.SHA256 }}"
 
     - name: Commit updated cask formula
       if: success()
