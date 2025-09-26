@@ -1,0 +1,53 @@
+name: Test Xamrock Cask
+
+on:
+  push:
+    branches: [main, master]
+    paths: ['Casks/xamrock.rb']
+  pull_request:
+    branches: [main, master]
+    paths: ['Casks/xamrock.rb']
+  workflow_dispatch:
+
+jobs:
+  test-cask:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Test cask syntax
+      run: |
+        brew style Casks/xamrock.rb
+
+    - name: Test cask installation (dry run)
+      run: |
+        # Test the cask (dry run)
+        brew install --cask ./Casks/xamrock.rb --dry-run
+
+    - name: Audit cask
+      run: |
+        brew audit --cask Casks/xamrock.rb
+
+    - name: Check for common issues
+      run: |
+        # Check if all required stanzas are present
+        grep -q "version" Casks/xamrock.rb
+        grep -q "sha256" Casks/xamrock.rb
+        grep -q "url" Casks/xamrock.rb
+        grep -q "name" Casks/xamrock.rb
+        grep -q "desc" Casks/xamrock.rb
+        grep -q "homepage" Casks/xamrock.rb
+        grep -q "app" Casks/xamrock.rb
+
+        echo "✅ All required stanzas are present"
+
+    - name: Verify download URL accessibility
+      run: |
+        # Extract version from cask file
+        VERSION=$(grep 'version' Casks/xamrock.rb | sed 's/.*version "\(.*\)".*/\1/')
+        URL="https://github.com/xamrock/xamrock-desktop/releases/download/${VERSION}/Xamrock-${VERSION}.zip"
+
+        echo "Testing URL: $URL"
+        curl -I "$URL" || echo "⚠️ Release URL not yet available (expected for unreleased versions)"

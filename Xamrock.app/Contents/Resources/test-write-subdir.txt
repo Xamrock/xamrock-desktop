@@ -1,0 +1,4 @@
+1 | This is a test file in the MCP subdirectory.
+2 | Testing write permissions to different directory.
+3 | Created at: $(date)
+4 | Test location: MCP/
