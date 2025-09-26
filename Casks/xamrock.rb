@@ -1,8 +1,8 @@
 cask "xamrock" do
-  version "0.1.14"
-  sha256 "0d522a0b79f78c8c309ef0f1151151dea8f3ff035a747feeddd8eaff7a669ece"
+  version "0.1.15"
+  sha256 "0aac96b1ed655e3e5370044667674cde0ddcad6aa98d3282fb8abe97b5cf23e4"
 
-  url "https://github.com/xamrock/xamrock-desktop/releases/download/#{version}/Xamrock-#{version}.zip"
+  url "https://github.com/xamrock/xamrock-desktop/releases/download/#{version}/Xamrock-#{version}.dmg"
   name "Xamrock"
   desc "Context Engineering IDE - AI-powered development environment"
   homepage "https://xamrock.com"
